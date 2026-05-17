@@ -135,7 +135,8 @@ public final class Main {
     private static Comparator<Article> articleComparator() {
         return Comparator.comparing(Article::date, Comparator.nullsLast(Comparator.reverseOrder()))
             .thenComparingInt(Article::order)
-            .thenComparing(article -> article.title().toLowerCase(Locale.ROOT));
+            .thenComparing(article -> article.title().toLowerCase(Locale.ROOT))
+            .thenComparingInt(article -> article.title().compareToIgnoreCase(article.title()));
     }
 
     private static void renderSite(Path root, Site site) throws IOException {
