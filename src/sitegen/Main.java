@@ -108,6 +108,7 @@ public final class Main {
                     document.frontmatter().getOrDefault("title", articleSlug),
                     document.frontmatter().getOrDefault("description", ""),
                     document.frontmatter().getOrDefault("summary", ""),
+                    renderInlineMarkdown(document.frontmatter().getOrDefault("summary", "")),
                     parseOrder(document.frontmatter().get("order")),
                     parseDate(document.frontmatter().get("date")),
                     "/" + slug + "/" + articleSlug + "/",
@@ -176,7 +177,7 @@ public final class Main {
             .map(article -> "<article class=\"article-card\">"
                 + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span></div>"
                 + "<h2><a href=\"" + article.path() + "\">" + escapeHtml(article.title()) + "</a></h2>"
-                + (!article.summary().isBlank() ? "<p>" + escapeHtml(article.summary()) + "</p>" : "")
+                + (!article.summaryHtml().isBlank() ? "<p>" + article.summaryHtml() + "</p>" : "")
                 + "</article>")
             .collect(Collectors.joining());
 
@@ -195,6 +196,7 @@ public final class Main {
             + "<a class=\"back-link\" href=\"" + section.path() + "\">Back to " + escapeHtml(section.title()) + "</a>"
             + renderPanelHeader(article.title(), description)
             + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span></div>"
+            + (!article.summaryHtml().isBlank() ? "<div class=\"article-summary\">" + article.summaryHtml() + "</div>" : "")
             + "<div class=\"markdown\">" + article.contentHtml() + "</div>"
             + "</article>";
 
@@ -381,7 +383,7 @@ public final class Main {
     private record Section(String title, String description, int order, String path, String contentHtml, List<Article> articles) implements PageLike {
     }
 
-    private record Article(String title, String description, String summary, int order, LocalDate date, String path, String contentHtml) {
+    private record Article(String title, String description, String summary, String summaryHtml, int order, LocalDate date, String path, String contentHtml) {
     }
 
     private record NavItem(String title, String path, int order) {
