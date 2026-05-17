@@ -181,6 +181,39 @@ main {
   font-weight: 600;
 }
 
+.related-articles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(18, 32, 51, 0.08);
+}
+
+.related-link {
+  flex: 1 1 220px;
+  padding: 1rem;
+  border-radius: 16px;
+  background: #f7faff;
+  border: 1px solid rgba(18, 32, 51, 0.08);
+  text-decoration: none;
+}
+
+.related-link span {
+  display: block;
+  color: #607385;
+  font-size: 0.9rem;
+}
+
+.related-link strong {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 1.05rem;
+}
+
+.related-link-next {
+  text-align: right;
+}
+
 @media (max-width: 800px) {
   .site-header {
     flex-direction: column;
