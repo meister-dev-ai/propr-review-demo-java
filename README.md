@@ -31,3 +31,7 @@ npm run test:e2e
 ```
 
 The Playwright `webServer` command rebuilds the site and serves `dist/` with `python3 -m http.server`.
+
+## Review branches
+
+- `BUG_SCENARIOS.md` lists the intentionally defective feature branches that should be reviewed against `main`.
