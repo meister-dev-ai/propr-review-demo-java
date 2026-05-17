@@ -1,6 +1,7 @@
 package sitegen;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -160,7 +161,8 @@ public final class Main {
             ? distDir.resolve("index.html")
             : distDir.resolve(routePath.substring(1)).resolve("index.html");
         Files.createDirectories(Objects.requireNonNull(target.getParent()));
-        Files.writeString(target, html, StandardCharsets.UTF_8);
+        OutputStream stream = Files.newOutputStream(target);
+        stream.write(html.getBytes(StandardCharsets.UTF_8));
     }
 
     private static String renderStandardPage(Site site, String title, String description, String activePath, String bodyHtml) {
