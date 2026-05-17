@@ -350,6 +350,8 @@ public final class Main {
         }
         try {
             return LocalDate.parse(value);
+        } catch (IllegalArgumentException exception) {
+            return null;
         } catch (DateTimeParseException exception) {
             throw new IllegalArgumentException("Invalid date: " + value, exception);
         }
