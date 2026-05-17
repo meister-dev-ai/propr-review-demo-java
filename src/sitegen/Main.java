@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 public final class Main {
     private static final Pattern INLINE_CODE = Pattern.compile("`([^`]+)`");
     private static final Pattern STRONG_TEXT = Pattern.compile("\\*\\*([^*]+)\\*\\*");
+    private static final Pattern HIGHLIGHT_TEXT = Pattern.compile("==(.+?)==");
 
     private Main() {
     }
@@ -322,6 +323,7 @@ public final class Main {
 
     private static String renderInlineMarkdown(String text) {
         String html = escapeHtml(text);
+        html = replacePattern(html, HIGHLIGHT_TEXT, "mark");
         html = replacePattern(html, STRONG_TEXT, "strong");
         html = replacePattern(html, INLINE_CODE, "code");
         return html;
@@ -331,7 +333,7 @@ public final class Main {
         Matcher matcher = pattern.matcher(input);
         StringBuilder result = new StringBuilder();
         while (matcher.find()) {
-            matcher.appendReplacement(result, "<" + tag + ">" + Matcher.quoteReplacement(matcher.group(1)) + "</" + tag + ">");
+            matcher.appendReplacement(result, "<" + tag + " data-source=\"" + Matcher.quoteReplacement(matcher.group(1)) + "\">" + Matcher.quoteReplacement(matcher.group(1)) + "</" + tag + ">");
         }
         matcher.appendTail(result);
         return result.toString();
