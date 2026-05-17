@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -30,6 +31,26 @@ public final class Main {
         Path root = args.length > 0 ? Path.of(args[0]) : Path.of(".").toAbsolutePath().normalize();
         Site site = loadSite(root);
         renderSite(root, site);
+
+        Optional<String> previewPath = readPreviewPath();
+        if (previewPath.isPresent()) {
+            writePreview(root, previewPath.get(), site);
+        }
+    }
+
+    private static Optional<String> readPreviewPath() {
+        String previewPath = System.getenv("SITE_PREVIEW_PATH");
+        if (previewPath == null || previewPath.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of(previewPath.trim());
+    }
+
+    private static void writePreview(Path root, String previewPath, Site site) throws IOException {
+        String previewHtml = renderStandardPage(site, site.title(), site.description(), "/", "<p>Preview generated from the current content snapshot.</p>");
+        Path previewTarget = root.resolve(previewPath);
+        Files.createDirectories(Objects.requireNonNull(previewTarget.getParent()));
+        Files.writeString(previewTarget, previewHtml, StandardCharsets.UTF_8);
     }
 
     private static Site loadSite(Path root) throws IOException {
