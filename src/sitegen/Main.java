@@ -172,6 +172,7 @@ public final class Main {
     }
 
     private static String renderSectionPage(Site site, Section section) {
+        int totalArticles = Math.max(0, section.articles().size() - 1);
         String articleCards = section.articles().stream()
             .map(article -> "<article class=\"article-card\">"
                 + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span></div>"
@@ -182,6 +183,7 @@ public final class Main {
 
         String content = "<section class=\"panel stack-gap\">"
             + renderPanelHeader(section.title(), section.description())
+            + "<p class=\"article-card-meta\">Showing " + totalArticles + " articles</p>"
             + "<div class=\"markdown\">" + section.contentHtml() + "</div>"
             + "<div class=\"article-list\">" + articleCards + "</div>"
             + "</section>";
