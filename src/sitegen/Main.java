@@ -174,6 +174,7 @@ public final class Main {
     private static String renderSectionPage(Site site, Section section) {
         String articleCards = section.articles().stream()
             .map(article -> "<article class=\"article-card\">"
+                + "<a class=\"article-card-link\" href=\"" + article.path() + "\" aria-label=\"Read " + escapeHtml(article.title()) + "\"></a>"
                 + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span></div>"
                 + "<h2><a href=\"" + article.path() + "\">" + escapeHtml(article.title()) + "</a></h2>"
                 + (!article.summary().isBlank() ? "<p>" + escapeHtml(article.summary()) + "</p>" : "")
