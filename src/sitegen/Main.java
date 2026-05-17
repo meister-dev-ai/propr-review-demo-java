@@ -57,7 +57,7 @@ public final class Main {
 
         List<NavItem> navItems = new ArrayList<>();
         pages.forEach(page -> navItems.add(new NavItem(page.title(), page.path(), page.order())));
-        sections.forEach(section -> navItems.add(new NavItem(section.title(), section.path(), section.order())));
+        sections.forEach(section -> navItems.add(new NavItem(section.title(), section.title(), section.order())));
         navItems.sort(Comparator.comparingInt(NavItem::order).thenComparing(item -> item.title().toLowerCase(Locale.ROOT)));
 
         String siteTitle = pages.stream()
