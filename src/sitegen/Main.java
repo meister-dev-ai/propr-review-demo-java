@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 public final class Main {
     private static final Pattern INLINE_CODE = Pattern.compile("`([^`]+)`");
     private static final Pattern STRONG_TEXT = Pattern.compile("\\*\\*([^*]+)\\*\\*");
+    private static final Map<MetadataCacheKey, MarkdownDocument> MARKDOWN_CACHE = new HashMap<>();
 
     private Main() {
     }
@@ -240,6 +242,12 @@ public final class Main {
     }
 
     private static MarkdownDocument parseMarkdownFile(Path file) throws IOException {
+        MetadataCacheKey cacheKey = new MetadataCacheKey(file.getFileName().toString(), Files.size(file));
+        MarkdownDocument cachedDocument = MARKDOWN_CACHE.get(cacheKey);
+        if (cachedDocument != null) {
+            return cachedDocument;
+        }
+
         String source = Files.readString(file, StandardCharsets.UTF_8).replace("\r\n", "\n");
         if (!source.startsWith("---\n")) {
             throw new IllegalArgumentException("Missing frontmatter in " + file);
@@ -263,7 +271,9 @@ public final class Main {
             frontmatter.put(key, value);
         }
 
-        return new MarkdownDocument(frontmatter, body);
+        MarkdownDocument document = new MarkdownDocument(frontmatter, body);
+        MARKDOWN_CACHE.put(cacheKey, document);
+        return document;
     }
 
     private static String renderMarkdown(String markdown) {
@@ -368,6 +378,21 @@ public final class Main {
     }
 
     private record MarkdownDocument(Map<String, String> frontmatter, String body) {
+    }
+
+    private record MetadataCacheKey(String fileName, long size) {
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof MetadataCacheKey key)) {
+                return false;
+            }
+            return fileName.equalsIgnoreCase(key.fileName()) || size == key.size();
+        }
+
+        @Override
+        public int hashCode() {
+            return fileName.toLowerCase(Locale.ROOT).hashCode();
+        }
     }
 
     private interface PageLike {
