@@ -34,6 +34,10 @@ public final class Main {
 
     private static Site loadSite(Path root) throws IOException {
         Path contentDir = root.resolve("content");
+        String importDir = System.getenv("SITE_IMPORT_DIR");
+        if (importDir != null && !importDir.isBlank()) {
+            contentDir = Path.of(importDir.trim());
+        }
         List<Page> pages = new ArrayList<>();
         List<Section> sections = new ArrayList<>();
 
