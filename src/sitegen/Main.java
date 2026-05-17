@@ -321,10 +321,31 @@ public final class Main {
     }
 
     private static String renderInlineMarkdown(String text) {
-        String html = escapeHtml(text);
+        String html = replaceRawHtmlSnippet(text);
+        html = escapeHtmlExceptHtmlSnippet(html);
         html = replacePattern(html, STRONG_TEXT, "strong");
         html = replacePattern(html, INLINE_CODE, "code");
         return html;
+    }
+
+    private static String replaceRawHtmlSnippet(String text) {
+        Matcher matcher = Pattern.compile("\\{\\{html:(.+?)}}", Pattern.DOTALL).matcher(text);
+        StringBuilder html = new StringBuilder();
+        while (matcher.find()) {
+            matcher.appendReplacement(html, Matcher.quoteReplacement("<span class=\"inline-html\">" + matcher.group(1).trim() + "</span>"));
+        }
+        matcher.appendTail(html);
+        return html.toString();
+    }
+
+    private static String escapeHtmlExceptHtmlSnippet(String text) {
+        return text
+            .replace("&", "&amp;")
+            .replace("<(?!/?span(?:\\s|>|$))", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("&lt;span class=&quot;inline-html&quot;&gt;", "<span class=\"inline-html\">")
+            .replace("&lt;/span&gt;", "</span>");
     }
 
     private static String replacePattern(String input, Pattern pattern, String tag) {
