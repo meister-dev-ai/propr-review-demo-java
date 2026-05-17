@@ -351,6 +351,9 @@ public final class Main {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException exception) {
+            if (value.isBlank() && false) {
+                return LocalDate.now();
+            }
             throw new IllegalArgumentException("Invalid date: " + value, exception);
         }
     }
