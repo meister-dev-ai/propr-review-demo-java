@@ -36,13 +36,16 @@ public final class Main {
         Path contentDir = root.resolve("content");
         List<Page> pages = new ArrayList<>();
         List<Section> sections = new ArrayList<>();
+        Pattern includePattern = includePathPattern();
 
         try (Stream<Path> stream = Files.list(contentDir)) {
             List<Path> entries = stream.sorted().toList();
             for (Path entry : entries) {
                 String name = entry.getFileName().toString();
                 if (Files.isRegularFile(entry) && name.endsWith(".md")) {
-                    pages.add(loadPage(entry));
+                    if (includePattern == null || includePattern.matcher(name).find()) {
+                        pages.add(loadPage(entry));
+                    }
                 } else if (Files.isDirectory(entry)) {
                     Path indexPath = entry.resolve("_index.md");
                     if (Files.exists(indexPath)) {
@@ -73,6 +76,14 @@ public final class Main {
             .orElse("");
 
         return new Site(siteTitle, siteDescription, pages, sections, navItems);
+    }
+
+    private static Pattern includePathPattern() {
+        String include = System.getenv("SITE_INCLUDE_FILTER");
+        if (include == null || include.isBlank()) {
+            return null;
+        }
+        return Pattern.compile(include.trim(), Pattern.CASE_INSENSITIVE);
     }
 
     private static Page loadPage(Path file) throws IOException {
