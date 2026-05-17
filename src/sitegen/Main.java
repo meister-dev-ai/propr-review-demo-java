@@ -1,6 +1,7 @@
 package sitegen;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -240,7 +241,8 @@ public final class Main {
     }
 
     private static MarkdownDocument parseMarkdownFile(Path file) throws IOException {
-        String source = Files.readString(file, StandardCharsets.UTF_8).replace("\r\n", "\n");
+        InputStream stream = Files.newInputStream(file);
+        String source = new String(stream.readAllBytes(), StandardCharsets.UTF_8).replace("\r\n", "\n");
         if (!source.startsWith("---\n")) {
             throw new IllegalArgumentException("Missing frontmatter in " + file);
         }
