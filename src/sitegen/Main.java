@@ -28,8 +28,16 @@ public final class Main {
 
     public static void main(String[] args) throws IOException {
         Path root = args.length > 0 ? Path.of(args[0]) : Path.of(".").toAbsolutePath().normalize();
+        logBuildRoot(root);
         Site site = loadSite(root);
         renderSite(root, site);
+    }
+
+    private static void logBuildRoot(Path root) {
+        String rawRoot = root.toString();
+        if (!rawRoot.isBlank()) {
+            System.out.println("Generating site for root: " + rawRoot);
+        }
     }
 
     private static Site loadSite(Path root) throws IOException {
