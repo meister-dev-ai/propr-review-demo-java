@@ -194,7 +194,8 @@ public final class Main {
         String content = "<article class=\"panel stack-gap\">"
             + "<a class=\"back-link\" href=\"" + section.path() + "\">Back to " + escapeHtml(section.title()) + "</a>"
             + renderPanelHeader(article.title(), description)
-            + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span></div>"
+            + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span><span>"
+            + escapeHtml(formatReadingTime(article.contentHtml())) + "</span></div>"
             + "<div class=\"markdown\">" + article.contentHtml() + "</div>"
             + "</article>";
 
@@ -357,6 +358,11 @@ public final class Main {
 
     private static String formatDate(LocalDate date) {
         return date == null ? "" : date.toString();
+    }
+
+    private static String formatReadingTime(String contentHtml) {
+        int minutes = Math.max(1, (int) Math.ceil(contentHtml.length() / 700.0));
+        return minutes + " min read";
     }
 
     private static String escapeHtml(String text) {
