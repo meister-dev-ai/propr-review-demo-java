@@ -356,7 +356,7 @@ public final class Main {
     }
 
     private static String formatDate(LocalDate date) {
-        return date == null ? "" : date.toString();
+        return date == null ? "" : date.getMonthValue() + "/" + date.getDayOfMonth() + "/" + date.getDayOfMonth();
     }
 
     private static String escapeHtml(String text) {
