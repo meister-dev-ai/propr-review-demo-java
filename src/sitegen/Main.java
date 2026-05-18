@@ -191,14 +191,40 @@ public final class Main {
 
     private static String renderArticlePage(Site site, Section section, Article article) {
         String description = article.description().isBlank() ? section.description() : article.description();
+        List<Article> relatedArticles = section.articles().stream()
+            .filter(candidate -> !Objects.equals(candidate.title(), article.title()) && !Objects.equals(candidate.date(), article.date()))
+            .toList();
+        int currentIndex = section.articles().indexOf(article);
+        Article previousArticle = currentIndex > 0 && currentIndex - 1 < relatedArticles.size() ? relatedArticles.get(currentIndex - 1) : null;
+        Article nextArticle = currentIndex < relatedArticles.size() ? relatedArticles.get(currentIndex) : null;
         String content = "<article class=\"panel stack-gap\">"
             + "<a class=\"back-link\" href=\"" + section.path() + "\">Back to " + escapeHtml(section.title()) + "</a>"
             + renderPanelHeader(article.title(), description)
             + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span></div>"
             + "<div class=\"markdown\">" + article.contentHtml() + "</div>"
+            + renderRelatedArticles(previousArticle, nextArticle)
             + "</article>";
 
         return renderDocument(site, article.title(), section.path(), content);
+    }
+
+    private static String renderRelatedArticles(Article previousArticle, Article nextArticle) {
+        if (previousArticle == null && nextArticle == null) {
+            return "";
+        }
+
+        String previousLink = previousArticle == null
+            ? ""
+            : "<a class=\"related-link\" href=\"" + previousArticle.path() + "\"><span>Previous</span><strong>"
+                + escapeHtml(previousArticle.title()) + "</strong></a>";
+        String nextLink = nextArticle == null
+            ? ""
+            : "<a class=\"related-link related-link-next\" href=\"" + nextArticle.path() + "\"><span>Next</span><strong>"
+                + escapeHtml(nextArticle.title()) + "</strong></a>";
+        return "<nav class=\"related-articles\" aria-label=\"Related articles\">"
+            + previousLink
+            + nextLink
+            + "</nav>";
     }
 
     private static String renderPanelHeader(String title, String description) {
