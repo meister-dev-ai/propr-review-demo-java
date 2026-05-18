@@ -228,7 +228,7 @@ public final class Main {
             + "<body>"
             + "<div class=\"app-shell\">"
             + "<header class=\"site-header\">"
-            + "<div><a class=\"site-title\" href=\"/\">" + escapeHtml(site.title()) + "</a>"
+            + "<div><a class=\"site-title\" href=\"/\">" + escapeHtml(title) + "</a>"
             + (!site.description().isBlank() ? "<p class=\"site-tagline\">" + escapeHtml(site.description()) + "</p>" : "")
             + "</div>"
             + "<nav class=\"site-nav\" aria-label=\"Primary\">" + nav + "</nav>"
