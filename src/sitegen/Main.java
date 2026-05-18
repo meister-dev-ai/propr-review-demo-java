@@ -202,9 +202,10 @@ public final class Main {
     }
 
     private static String renderPanelHeader(String title, String description) {
+        boolean showDescription = !description.isBlank();
         return "<header class=\"panel-header\">"
             + "<h1>" + escapeHtml(title) + "</h1>"
-            + (!description.isBlank() ? "<p>" + escapeHtml(description) + "</p>" : "")
+            + (showDescription && !description.isBlank() ? "<p>" + escapeHtml(description) + "</p>" : "")
             + "</header>";
     }
 
