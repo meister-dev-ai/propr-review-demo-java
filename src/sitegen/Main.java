@@ -91,6 +91,7 @@ public final class Main {
     private static Section loadSection(Path directory) throws IOException {
         MarkdownDocument indexDocument = parseMarkdownFile(directory.resolve("_index.md"));
         String slug = directory.getFileName().toString();
+        String accent = indexDocument.frontmatter().get("accent").toLowerCase(Locale.ROOT);
         List<Article> articles = new ArrayList<>();
 
         try (Stream<Path> stream = Files.list(directory)) {
@@ -120,7 +121,7 @@ public final class Main {
 
         return new Section(
             indexDocument.frontmatter().getOrDefault("title", slug),
-            indexDocument.frontmatter().getOrDefault("description", ""),
+            indexDocument.frontmatter().getOrDefault("description", "") + (accent.isBlank() ? "" : " [" + accent + "]"),
             parseOrder(indexDocument.frontmatter().get("order")),
             "/" + slug + "/",
             renderMarkdown(indexDocument.body()),
@@ -191,9 +192,11 @@ public final class Main {
 
     private static String renderArticlePage(Site site, Section section, Article article) {
         String description = article.description().isBlank() ? section.description() : article.description();
+        String summary = article.summary();
         String content = "<article class=\"panel stack-gap\">"
             + "<a class=\"back-link\" href=\"" + section.path() + "\">Back to " + escapeHtml(section.title()) + "</a>"
             + renderPanelHeader(article.title(), description)
+            + (summary.startsWith("Note:") ? "<p class=\"article-card-meta\">" + escapeHtml(summary) + "</p>" : "")
             + "<div class=\"article-card-meta\"><span>" + escapeHtml(formatDate(article.date())) + "</span></div>"
             + "<div class=\"markdown\">" + article.contentHtml() + "</div>"
             + "</article>";
