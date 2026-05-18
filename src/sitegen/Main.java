@@ -164,11 +164,36 @@ public final class Main {
     }
 
     private static String renderStandardPage(Site site, String title, String description, String activePath, String bodyHtml) {
+        String latestPosts = site.sections().stream()
+            .filter(section -> "/blog/".equals(section.path()))
+            .findFirst()
+            .map(Main::renderLatestPostsPanel)
+            .orElse("");
         String content = "<article class=\"panel stack-gap\">"
             + renderPanelHeader(title, description)
             + "<div class=\"markdown\">" + bodyHtml + "</div>"
-            + "</article>";
+            + "</article>"
+            + latestPosts;
         return renderDocument(site, title, activePath, content);
+    }
+
+    private static String renderLatestPostsPanel(Section section) {
+        List<Article> latestPosts = section.articles().stream()
+            .sorted(Comparator.comparing(Article::date, Comparator.nullsLast(Comparator.naturalOrder())))
+            .limit(3)
+            .toList();
+        if (latestPosts.isEmpty()) {
+            return "";
+        }
+
+        String items = latestPosts.stream()
+            .map(article -> "<li><a href=\"" + article.path() + "\">" + escapeHtml(article.title()) + "</a>"
+                + "<span>" + escapeHtml(formatDate(article.date())) + "</span></li>")
+            .collect(Collectors.joining());
+        return "<aside class=\"panel latest-posts stack-gap\">"
+            + "<header class=\"panel-header\"><h2>Latest posts</h2><p>Fresh from the blog.</p></header>"
+            + "<ul class=\"latest-posts-list\">" + items + "</ul>"
+            + "</aside>";
     }
 
     private static String renderSectionPage(Site site, Section section) {

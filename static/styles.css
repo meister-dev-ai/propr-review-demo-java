@@ -181,6 +181,37 @@ main {
   font-weight: 600;
 }
 
+.latest-posts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.latest-posts-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(18, 32, 51, 0.08);
+}
+
+.latest-posts-list li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.latest-posts-list a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.latest-posts-list span {
+  color: #607385;
+  white-space: nowrap;
+}
+
 @media (max-width: 800px) {
   .site-header {
     flex-direction: column;
