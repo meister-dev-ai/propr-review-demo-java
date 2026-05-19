@@ -10,6 +10,10 @@ Small static blog review demo built with a native Java static-site generator.
 - `dist/` is generated output.
 - `tests/site.spec.ts` contains Playwright end-to-end coverage.
 
+## Content Model
+
+All first-class site content should be content-driven under `content/` so editorial structure stays visible in the repository tree.
+
 ## Build
 
 ```bash
