@@ -10,6 +10,10 @@ Small static blog review demo built with a native Java static-site generator.
 - `dist/` is generated output.
 - `tests/site.spec.ts` contains Playwright end-to-end coverage.
 
+## Section Pipeline
+
+User-facing sections should reuse the same section and article pipeline so listing, routing, and rendering stay consistent.
+
 ## Build
 
 ```bash
