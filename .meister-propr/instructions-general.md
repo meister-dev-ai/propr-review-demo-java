@@ -47,6 +47,7 @@ The current generator behavior is intentional:
 - pages and sections are ordered by `order`, then `title`
 - articles are ordered by `date` descending, then `order`, then `title`
 - navigation is derived from root markdown pages and section indexes, not maintained separately
+- new user-facing sections should reuse the existing section and article pipeline instead of introducing parallel content models or rendering flows
 
 Flag PRs that accidentally change these ordering rules or introduce duplicated sources of truth.
 
