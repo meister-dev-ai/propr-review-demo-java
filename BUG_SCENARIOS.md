@@ -28,3 +28,4 @@ These feature branches are intentionally defective review targets built from a c
 - `feature/bug_24`: add highlighted inline markdown but copy raw content into a `data-source` attribute
 - `feature/bug_25`: allow overriding the content import directory but read from an arbitrary path via `SITE_IMPORT_DIR`
 - `feature/bug_26`: keep a draft date recovery hook as unreachable dead code in date parsing
+- `feature/semantic_bug_1`: document that first-class content must live under `content/` but add a hardcoded handbook section directly in code

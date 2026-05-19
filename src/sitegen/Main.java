@@ -52,6 +52,8 @@ public final class Main {
             }
         }
 
+        sections.add(loadHandbookSection());
+
         pages.sort(pageComparator());
         sections.sort(pageComparator());
 
@@ -124,6 +126,38 @@ public final class Main {
             parseOrder(indexDocument.frontmatter().get("order")),
             "/" + slug + "/",
             renderMarkdown(indexDocument.body()),
+            articles
+        );
+    }
+
+    private static Section loadHandbookSection() {
+        List<Article> articles = List.of(
+            new Article(
+                "Team Rituals",
+                "How the team runs planning and review.",
+                "Meeting cadence, review expectations, and release habits.",
+                1,
+                null,
+                "/handbook/team-rituals/",
+                renderMarkdown("# Team rituals\n\nUse pull requests for every change and keep reviews small enough to finish in one pass.")
+            ),
+            new Article(
+                "Writing Updates",
+                "A short guide for internal status notes.",
+                "Keep internal notes concise and link back to source changes.",
+                2,
+                null,
+                "/handbook/writing-updates/",
+                renderMarkdown("# Writing updates\n\nPrefer short updates that explain what changed, why it changed, and what needs follow-up.")
+            )
+        );
+
+        return new Section(
+            "Handbook",
+            "Internal process notes for the demo team.",
+            4,
+            "/handbook/",
+            renderMarkdown("# Handbook\n\nInternal guides for the team live here even when they are maintained directly in the generator."),
             articles
         );
     }
