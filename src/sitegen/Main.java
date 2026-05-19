@@ -55,9 +55,12 @@ public final class Main {
         pages.sort(pageComparator());
         sections.sort(pageComparator());
 
+        StatusPage statusPage = loadStatusPage();
+
         List<NavItem> navItems = new ArrayList<>();
         pages.forEach(page -> navItems.add(new NavItem(page.title(), page.path(), page.order())));
         sections.forEach(section -> navItems.add(new NavItem(section.title(), section.path(), section.order())));
+        navItems.add(new NavItem(statusPage.title(), statusPage.path(), statusPage.order()));
         navItems.sort(Comparator.comparingInt(NavItem::order).thenComparing(item -> item.title().toLowerCase(Locale.ROOT)));
 
         String siteTitle = pages.stream()
@@ -72,7 +75,21 @@ public final class Main {
             .findFirst()
             .orElse("");
 
-        return new Site(siteTitle, siteDescription, pages, sections, navItems);
+        return new Site(siteTitle, siteDescription, pages, sections, navItems, statusPage);
+    }
+
+    private static StatusPage loadStatusPage() {
+        return new StatusPage(
+            "Status",
+            "A manually maintained snapshot of build and review readiness.",
+            5,
+            "/status/",
+            List.of(
+                "Builds run locally before fixture branches are shared.",
+                "Review scenarios stay small so regressions are easy to isolate.",
+                "Navigation includes status explicitly so it is always visible."
+            )
+        );
     }
 
     private static Page loadPage(Path file) throws IOException {
@@ -153,6 +170,8 @@ public final class Main {
                 writePage(distDir, article.path(), renderArticlePage(site, section, article));
             }
         }
+
+        writePage(distDir, site.statusPage().path(), renderStatusPage(site, site.statusPage()));
     }
 
     private static void writePage(Path distDir, String routePath, String html) throws IOException {
@@ -199,6 +218,18 @@ public final class Main {
             + "</article>";
 
         return renderDocument(site, article.title(), section.path(), content);
+    }
+
+    private static String renderStatusPage(Site site, StatusPage statusPage) {
+        String items = statusPage.highlights().stream()
+            .map(item -> "<li>" + escapeHtml(item) + "</li>")
+            .collect(Collectors.joining());
+        String content = "<section class=\"panel stack-gap\">"
+            + renderPanelHeader(statusPage.title(), statusPage.description())
+            + "<div class=\"markdown\"><p>This page is wired into the site separately from content discovery so operational updates can stay prominent.</p></div>"
+            + "<ul>" + items + "</ul>"
+            + "</section>";
+        return renderDocument(site, statusPage.title(), statusPage.path(), content);
     }
 
     private static String renderPanelHeader(String title, String description) {
@@ -387,6 +418,9 @@ public final class Main {
     private record NavItem(String title, String path, int order) {
     }
 
-    private record Site(String title, String description, List<Page> pages, List<Section> sections, List<NavItem> navItems) {
+    private record Site(String title, String description, List<Page> pages, List<Section> sections, List<NavItem> navItems, StatusPage statusPage) {
+    }
+
+    private record StatusPage(String title, String description, int order, String path, List<String> highlights) {
     }
 }

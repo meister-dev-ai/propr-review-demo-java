@@ -10,6 +10,10 @@ Small static blog review demo built with a native Java static-site generator.
 - `dist/` is generated output.
 - `tests/site.spec.ts` contains Playwright end-to-end coverage.
 
+## Routing Model
+
+Navigation, routing, and page discovery should follow the content tree conventions so new sections appear without manual registration.
+
 ## Build
 
 ```bash

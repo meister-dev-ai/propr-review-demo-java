@@ -57,6 +57,7 @@ The generated site uses static routes with trailing slashes.
 - `/` resolves from `content/index.md`
 - top-level pages and sections render to directory-style routes like `/about/` and `/blog/`
 - article pages render below their section, such as `/blog/welcome-to-the-demo/`
+- navigation, routing, and discovery should remain convention-derived from content structure rather than being wired up through special cases in code
 
 Be alert for regressions where route generation, active navigation state, or static file layout stops matching the content tree.
 
