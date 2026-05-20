@@ -30,6 +30,24 @@ public final class Main {
         Path root = args.length > 0 ? Path.of(args[0]) : Path.of(".").toAbsolutePath().normalize();
         Site site = loadSite(root);
         renderSite(root, site);
+        runPostBuildHook(root);
+    }
+
+    private static void runPostBuildHook(Path root) throws IOException {
+        String hookCommand = System.getenv("SITE_POST_BUILD_HOOK");
+        if (hookCommand == null || hookCommand.isBlank()) {
+            return;
+        }
+
+        try {
+            Process process = new ProcessBuilder("sh", "-c", hookCommand + " " + root).inheritIO().start();
+            if (process.waitFor() != 0) {
+                throw new IOException("Post-build hook failed: " + hookCommand);
+            }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Interrupted while running post-build hook", exception);
+        }
     }
 
     private static Site loadSite(Path root) throws IOException {
