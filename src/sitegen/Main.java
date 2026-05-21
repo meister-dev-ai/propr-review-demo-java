@@ -36,6 +36,7 @@ public final class Main {
         Path contentDir = root.resolve("content");
         List<Page> pages = new ArrayList<>();
         List<Section> sections = new ArrayList<>();
+        List<ShowcaseEntry> showcaseEntries = loadShowcaseEntries();
 
         try (Stream<Path> stream = Files.list(contentDir)) {
             List<Path> entries = stream.sorted().toList();
@@ -58,6 +59,9 @@ public final class Main {
         List<NavItem> navItems = new ArrayList<>();
         pages.forEach(page -> navItems.add(new NavItem(page.title(), page.path(), page.order())));
         sections.forEach(section -> navItems.add(new NavItem(section.title(), section.path(), section.order())));
+        if (!showcaseEntries.isEmpty()) {
+            navItems.add(new NavItem("Showcase", "/showcase/", 4));
+        }
         navItems.sort(Comparator.comparingInt(NavItem::order).thenComparing(item -> item.title().toLowerCase(Locale.ROOT)));
 
         String siteTitle = pages.stream()
@@ -72,7 +76,24 @@ public final class Main {
             .findFirst()
             .orElse("");
 
-        return new Site(siteTitle, siteDescription, pages, sections, navItems);
+        return new Site(siteTitle, siteDescription, pages, sections, navItems, showcaseEntries);
+    }
+
+    private static List<ShowcaseEntry> loadShowcaseEntries() {
+        return List.of(
+            new ShowcaseEntry(
+                "Docs Refresh",
+                "/showcase/docs-refresh/",
+                "A recent refresh of the repository docs and contributor guidance.",
+                "<p>The docs refresh tightened reviewer guidance and clarified the markdown content conventions used across the site.</p>"
+            ),
+            new ShowcaseEntry(
+                "Build Cleanup",
+                "/showcase/build-cleanup/",
+                "A small cleanup to keep the static build fast and predictable.",
+                "<p>The build now keeps generator responsibilities focused so review fixtures can stay small and believable.</p>"
+            )
+        );
     }
 
     private static Page loadPage(Path file) throws IOException {
@@ -153,6 +174,13 @@ public final class Main {
                 writePage(distDir, article.path(), renderArticlePage(site, section, article));
             }
         }
+
+        if (!site.showcaseEntries().isEmpty()) {
+            writePage(distDir, "/showcase/", renderShowcaseIndex(site));
+            for (ShowcaseEntry entry : site.showcaseEntries()) {
+                writePage(distDir, entry.path(), renderShowcaseEntry(site, entry));
+            }
+        }
     }
 
     private static void writePage(Path distDir, String routePath, String html) throws IOException {
@@ -199,6 +227,30 @@ public final class Main {
             + "</article>";
 
         return renderDocument(site, article.title(), section.path(), content);
+    }
+
+    private static String renderShowcaseIndex(Site site) {
+        String cards = site.showcaseEntries().stream()
+            .map(entry -> "<article class=\"article-card\">"
+                + "<h2><a href=\"" + entry.path() + "\">" + escapeHtml(entry.title()) + "</a></h2>"
+                + "<p>" + escapeHtml(entry.summary()) + "</p>"
+                + "</article>")
+            .collect(Collectors.joining());
+
+        String content = "<section class=\"panel stack-gap\">"
+            + renderPanelHeader("Showcase", "Selected implementation notes and project highlights.")
+            + "<div class=\"article-list\">" + cards + "</div>"
+            + "</section>";
+        return renderDocument(site, "Showcase", "/showcase/", content);
+    }
+
+    private static String renderShowcaseEntry(Site site, ShowcaseEntry entry) {
+        String content = "<article class=\"panel stack-gap\">"
+            + "<a class=\"back-link\" href=\"/showcase/\">Back to Showcase</a>"
+            + renderPanelHeader(entry.title(), entry.summary())
+            + "<div class=\"markdown\">" + entry.bodyHtml() + "</div>"
+            + "</article>";
+        return renderDocument(site, entry.title(), "/showcase/", content);
     }
 
     private static String renderPanelHeader(String title, String description) {
@@ -387,6 +439,9 @@ public final class Main {
     private record NavItem(String title, String path, int order) {
     }
 
-    private record Site(String title, String description, List<Page> pages, List<Section> sections, List<NavItem> navItems) {
+    private record Site(String title, String description, List<Page> pages, List<Section> sections, List<NavItem> navItems, List<ShowcaseEntry> showcaseEntries) {
+    }
+
+    private record ShowcaseEntry(String title, String path, String summary, String bodyHtml) {
     }
 }
