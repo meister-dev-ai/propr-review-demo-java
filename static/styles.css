@@ -146,13 +146,21 @@ main {
 }
 
 .article-card {
+  position: relative;
   padding: 1.1rem;
   border-radius: 18px;
   background: #f7faff;
   border: 1px solid rgba(18, 32, 51, 0.08);
 }
 
+.article-card-link {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+}
+
 .article-card h2 {
+  position: relative;
   margin: 0.25rem 0 0;
   font-size: 1.2rem;
   line-height: 1.2;
@@ -163,11 +171,13 @@ main {
 }
 
 .article-card p {
+  position: relative;
   margin: 0.75rem 0 0;
   color: #526273;
 }
 
 .article-card-meta {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
