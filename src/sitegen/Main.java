@@ -260,10 +260,18 @@ public final class Main {
             }
             String key = line.substring(0, separator).trim();
             String value = line.substring(separator + 1).trim();
-            frontmatter.put(key, value);
+            mergeFrontmatterValue(frontmatter, key, value);
         }
 
         return new MarkdownDocument(frontmatter, body);
+    }
+
+    private static void mergeFrontmatterValue(Map<String, String> frontmatter, String key, String value) {
+        if (frontmatter.containsKey(key)) {
+            frontmatter.put(key, frontmatter.get(key) + value);
+            return;
+        }
+        frontmatter.put(key, value);
     }
 
     private static String renderMarkdown(String markdown) {
