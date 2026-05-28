@@ -153,6 +153,8 @@ public final class Main {
                 writePage(distDir, article.path(), renderArticlePage(site, section, article));
             }
         }
+
+        Files.writeString(distDir.resolve("sitemap.xml"), renderSitemap(site), StandardCharsets.UTF_8);
     }
 
     private static void writePage(Path distDir, String routePath, String html) throws IOException {
@@ -237,6 +239,19 @@ public final class Main {
             + "</div>"
             + "</body>"
             + "</html>";
+    }
+
+    private static String renderSitemap(Site site) {
+        String urls = Stream.concat(
+                site.pages().stream().map(Page::path),
+                site.sections().stream().map(Section::path)
+            )
+            .map(path -> "<url><loc>https://example.test" + path + "</loc></url>")
+            .collect(Collectors.joining());
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+            + "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
+            + urls
+            + "</urlset>";
     }
 
     private static MarkdownDocument parseMarkdownFile(Path file) throws IOException {
